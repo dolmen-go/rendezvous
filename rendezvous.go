@@ -2,6 +2,7 @@
 package rendezvous
 
 import (
+	"context"
 	"fmt"
 	"sync"
 )
@@ -37,6 +38,50 @@ func WaitAll(funcs ...Func) []error {
 			}()
 			defer catchPanicAsError(&err)
 			err = f()
+		}(f)
+	}
+
+	wg.Wait()
+	close(errChan)
+
+	var errs []error
+	for err := range errChan {
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return errs
+}
+
+type FuncCtx func(ctx context.Context) error
+
+func WaitAllContext(ctx context.Context, funcs ...FuncCtx) []error {
+	if len(funcs) == 0 {
+		return nil
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(funcs))
+
+	for _, f := range funcs {
+		if f == nil {
+			continue
+		}
+		wg.Add(1)
+		go func(f FuncCtx) {
+			defer wg.Done()
+			var err error
+			defer func() {
+				if err != nil && (err != context.Canceled || ctx.Err() == nil) {
+					errChan <- err
+					cancel()
+				}
+			}()
+			defer catchPanicAsError(&err)
+			err = f(ctx)
 		}(f)
 	}
 
