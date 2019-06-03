@@ -2,6 +2,8 @@
 package rendezvous
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"sync"
 )
@@ -51,6 +53,95 @@ func WaitAll(funcs ...Func) []error {
 	}
 
 	return errs
+}
+
+// FuncCtx is a task with an execution context.
+type FuncCtx func(ctx context.Context) error
+
+// WaitFirstError runs each task in a goroutine and waits for all to terminate.
+//
+// The first error returned by a task triggers the cancellation of the context of the others.
+// In any case, return happens only after all launched goroutines are done.
+//
+// The returned error, if not nil, wraps the list of errors, in no particular order. Use this to unwrap:
+//
+//	var errs interface { Unwrap() []error }
+//	if errors.As(err, &errs) {
+//		... errs.Unwrap() ...
+//	}
+//
+// Notes:
+//   - if the context is cancelled, there is no builtin way to know which task was launched and succeeded.
+//   - when abort happens, some tasks may not have even been launched.
+func WaitFirstError(ctx context.Context, tasks ...FuncCtx) error {
+	childCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	var wg sync.WaitGroup
+	var earlyStop bool
+	errChan := make(chan error, len(tasks))
+
+launch:
+	for _, f := range tasks {
+		if f == nil {
+			continue
+		}
+		select {
+		case <-ctx.Done():
+			earlyStop = true
+			break launch
+		case <-childCtx.Done():
+			earlyStop = true
+			break launch
+		default:
+			wg.Add(1)
+			go func(f FuncCtx) {
+				defer wg.Done()
+				var err error
+				defer func() {
+					if err != nil {
+						errChan <- err
+						cancel()
+					}
+				}()
+				defer catchPanicAsError(&err)
+				err = f(childCtx)
+			}(f)
+		}
+	}
+
+	wg.Wait()
+	close(errChan)
+
+	var errs []error
+
+	// Context cancelled?
+	errCtx := ctx.Err()
+	if errCtx != nil {
+		if earlyStop {
+			// We stopped launching tasks because of context cancellation
+			// so we must report that cause.
+			errs = append(errs, errCtx)
+		} else {
+			// All tasks were launched.
+			// We will add errCtx later only if some errors happened in tasks.
+			errs = append(errs, nil)
+		}
+	}
+
+	for err := range errChan {
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	// Add the error that has probably triggered the bad termination of some tasks.
+	// If no errors happened, the cancellation had no impact, so don't fail.
+	if len(errs) > 1 && errs[0] == nil {
+		errs[0] = errCtx
+	}
+
+	return errors.Join(errs...)
 }
 
 func catchPanicAsError(perr *error) {
