@@ -3,7 +3,6 @@ package rendezvous
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 )
@@ -141,7 +140,7 @@ launch:
 		errs[0] = errCtx
 	}
 
-	return errors.Join(errs...)
+	return joinErrors(errs...)
 }
 
 func catchPanicAsError(perr *error) {
