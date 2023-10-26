@@ -1,16 +1,23 @@
 # rendezvous - Synchronization utilities for Go
 
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/dolmen-go/rendezvous)
-[![Travis-CI](https://api.travis-ci.org/dolmen-go/rendezvous.svg?branch=master)](https://travis-ci.org/dolmen-go/rendezvous)
+[![Go Reference](https://pkg.go.dev/badge/github.com/dolmen-go/rendezvous.svg)](https://pkg.go.dev/github.com/dolmen-go/rendezvous)
+[![CI](https://github.com/dolmen-go/rendezvous/actions/workflows/go.yml/badge.svg)](https://github.com/dolmen-go/rendezvous/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/rendezvous)](https://goreportcard.com/report/github.com/dolmen-go/rendezvous)
 
 ## Status
 
 Production ready. 100% code coverage.
 
+## Features
+
+* [`WaitAll(...Func) []error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitAll)
+
+* [`WaitFirstError(...FuncCtx) error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitFirstError)
+
+
 ## License
 
-Copyright 2019 Olivier Mengué
+Copyright 2019-2023 Olivier Mengué
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
