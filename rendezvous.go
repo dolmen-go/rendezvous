@@ -24,7 +24,7 @@ import (
 )
 
 // Func is just a task returning a runtime error.
-type Func func() error
+type Func = func() error
 
 // WaitAll launches each Func in a separate goroutine and waits indefinitely until all goroutines finish.
 // This is called a "rendez-vous".
@@ -71,7 +71,7 @@ func WaitAll(funcs ...Func) []error {
 }
 
 // FuncCtx is a task with an execution context.
-type FuncCtx func(ctx context.Context) error
+type FuncCtx = func(ctx context.Context) error
 
 // WaitFirstError runs each task in a goroutine and waits for all to terminate.
 //
