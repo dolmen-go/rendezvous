@@ -10,9 +10,9 @@ Production ready. 100% code coverage.
 
 ## Features
 
-* [`WaitAll(...Func) []error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitAll)
+* [`WaitAll(...Task) []error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitAll)
 
-* [`WaitFirstError(...FuncCtx) error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitFirstError)
+* [`WaitFirstError(...TaskCtx) error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitFirstError)
 
 
 ## License

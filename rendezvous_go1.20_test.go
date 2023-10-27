@@ -157,7 +157,7 @@ func TestContextCanceled(t *testing.T) {
 
 		ch := make(chan struct{})
 		go func() {
-			// Wait for the FuncCtx below to start...
+			// Wait for the TaskCtx below to start...
 			<-ch
 			cancel()
 		}()
@@ -186,7 +186,7 @@ func TestContextCanceled(t *testing.T) {
 
 		ch := make(chan struct{})
 		go func() {
-			// Wait for the FuncCtx below to start...
+			// Wait for the TaskCtx below to start...
 			<-ch
 			cancel()
 		}()

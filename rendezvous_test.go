@@ -132,7 +132,7 @@ func TestManyRandom(t *testing.T) {
 
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 	n := rand.Intn(50)
-	var funcs []rendezvous.Func
+	var tasks []rendezvous.Task
 	var countErrors int
 	for i := 0; i < n; i++ {
 		var f func() error
@@ -143,10 +143,10 @@ func TestManyRandom(t *testing.T) {
 			f = noError
 		}
 		f = withDelay(time.Duration(rand.Intn(500))*time.Millisecond, f)
-		funcs = append(funcs, f)
+		tasks = append(tasks, f)
 	}
 
-	errs := rendezvous.WaitAll(funcs...)
+	errs := rendezvous.WaitAll(tasks...)
 	if len(errs) != countErrors {
 		t.Errorf("got: %v", errs)
 	}

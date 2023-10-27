@@ -23,28 +23,28 @@ import (
 	"sync"
 )
 
-// Func is just a task returning a runtime error.
-type Func = func() error
+// Task is just a func returning a runtime error.
+type Task = func() error
 
-// WaitAll launches each Func in a separate goroutine and waits indefinitely until all goroutines finish.
+// WaitAll launches each [Task] in a separate goroutine and waits indefinitely until all goroutines finish.
 // This is called a "rendez-vous".
 //
-// The result is the unordered list of non-nil errors returned by any func.
+// The result is the unordered list of non-nil errors returned by any task.
 // Panic occuring inside a goroutine are caught and converted as errors.
-func WaitAll(funcs ...Func) []error {
-	if len(funcs) == 0 {
+func WaitAll(tasks ...Task) []error {
+	if len(tasks) == 0 {
 		return nil
 	}
 	var wg sync.WaitGroup
-	errChan := make(chan error, len(funcs))
-	wg.Add(len(funcs))
+	errChan := make(chan error, len(tasks))
+	wg.Add(len(tasks))
 
-	for _, f := range funcs {
-		if f == nil {
+	for _, t := range tasks {
+		if t == nil {
 			wg.Done()
 			continue
 		}
-		go func(f Func) {
+		go func(t Task) {
 			var err error
 			defer func() {
 				if err != nil {
@@ -53,8 +53,8 @@ func WaitAll(funcs ...Func) []error {
 				wg.Done()
 			}()
 			defer catchPanicAsError(&err)
-			err = f()
-		}(f)
+			err = t()
+		}(t)
 	}
 
 	wg.Wait()
@@ -70,8 +70,8 @@ func WaitAll(funcs ...Func) []error {
 	return errs
 }
 
-// FuncCtx is a task with an execution context.
-type FuncCtx = func(ctx context.Context) error
+// TaskCtx is a task with a cancelable execution context.
+type TaskCtx = func(ctx context.Context) error
 
 // WaitFirstError runs each task in a goroutine and waits for all to terminate.
 //
@@ -88,7 +88,7 @@ type FuncCtx = func(ctx context.Context) error
 // Notes:
 //   - if the context is cancelled, there is no builtin way to know which task was launched and succeeded.
 //   - when abort happens, some tasks may not have even been launched.
-func WaitFirstError(ctx context.Context, tasks ...FuncCtx) error {
+func WaitFirstError(ctx context.Context, tasks ...TaskCtx) error {
 	childCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -97,8 +97,8 @@ func WaitFirstError(ctx context.Context, tasks ...FuncCtx) error {
 	errChan := make(chan error, len(tasks))
 
 launch:
-	for _, f := range tasks {
-		if f == nil {
+	for _, t := range tasks {
+		if t == nil {
 			continue
 		}
 		select {
@@ -110,7 +110,7 @@ launch:
 			break launch
 		default:
 			wg.Add(1)
-			go func(f FuncCtx) {
+			go func(t TaskCtx) {
 				defer wg.Done()
 				var err error
 				defer func() {
@@ -120,8 +120,8 @@ launch:
 					}
 				}()
 				defer catchPanicAsError(&err)
-				err = f(childCtx)
-			}(f)
+				err = t(childCtx)
+			}(t)
 		}
 	}
 
