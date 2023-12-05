@@ -10,10 +10,27 @@ Production ready. 100% code coverage.
 
 ## Features
 
+* Never leak goroutines: all functions will wait until the termination of all launched goroutines, whatever happen.
+
+* Panics in goroutines are caught and propagated as errors.
+
+* Task cancellation and timeout via [context.Context](https://pkg.go.dev/context#Context).
+
+## API
+
+* [`type Task = func() error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#Task)
+
 * [`WaitAll(...Task) []error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitAll)
+
+* [`type TaskCtx = func(context.Context) error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#TaskCtx)
 
 * [`WaitFirstError(...TaskCtx) error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#WaitFirstError)
 
+## See also
+
+* [Go issue #57534](https://github.com/golang/go/issues/57534)
+
+* [`golang.org/x/sync/errgroup.WithContext`](https://pkg.go.dev/golang.org/x/sync/errgroup#WithContext)
 
 ## License
 
