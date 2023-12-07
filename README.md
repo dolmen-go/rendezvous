@@ -16,6 +16,9 @@ Production ready. 100% code coverage.
 
 * Task cancellation and timeout via [context.Context](https://pkg.go.dev/context#Context).
 
+* All errors are returned, either as `[]error` or as an error that you can `Unwrap() []error`
+  (see [`errors.Join`](https://pkg.go.dev/errors#Join)).
+
 ## API
 
 * [`type Task = func() error`](https://pkg.go.dev/github.com/dolmen-go/rendezvous#Task)
