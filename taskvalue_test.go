@@ -1,5 +1,3 @@
-//go:build go1.18
-
 /*
    Copyright 2023 Olivier Mengué
 

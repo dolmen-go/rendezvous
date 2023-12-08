@@ -1,5 +1,3 @@
-//go:build go1.18
-
 /*
 Copyright 2023 Olivier Mengué
 
@@ -22,7 +20,8 @@ import "context"
 
 // TaskValueCtx wraps a function that returns a value and an error to make it a [TaskCtx]
 // for [WaitFirstError]. The value is returned via a channel, so the values of successful
-// tasks can be retrieved even if one task fails.
+// tasks can be retrieved even if one task fails by checking for each task's channel if it
+// has a value.
 func TaskValueCtx[T any](fetchT func(context.Context) (T, error)) (<-chan T, TaskCtx) {
 	ch := make(chan T, 1)
 	return ch, func(ctx context.Context) error {
