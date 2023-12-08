@@ -2,6 +2,8 @@
 
 package rendezvous
 
+import "errors"
+
 func joinErrors(errs ...error) error {
 	n := 0
 	for _, err := range errs {
@@ -40,4 +42,22 @@ func (e *joinError) Error() string {
 
 func (e *joinError) Unwrap() []error {
 	return e.errs
+}
+
+func (e *joinError) Is(target error) bool {
+	for _, f := range e.errs {
+		if errors.Is(f, target) {
+			return true
+		}
+	}
+	return false
+}
+
+func (e *joinError) As(target interface{}) bool {
+	for _, f := range e.errs {
+		if errors.As(f, target) {
+			return true
+		}
+	}
+	return false
 }
