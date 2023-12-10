@@ -44,6 +44,23 @@ func ExampleTaskValueCtx() {
 	// 42 ok
 }
 
+func ExampleTaskValue() {
+	aChan, aTask := rendezvous.TaskValue(func() (int, error) {
+		return 42, nil
+	})
+	bChan, bTask := rendezvous.TaskValue(func() (string, error) {
+		return "ok", nil
+	})
+	errs := rendezvous.WaitAll(aTask, bTask)
+	if errs != nil {
+		log.Fatal(errs)
+	}
+	a, b := <-aChan, <-bChan
+	fmt.Println(a, b)
+	// Output:
+	// 42 ok
+}
+
 func TestTaskValueCtxFailure(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 

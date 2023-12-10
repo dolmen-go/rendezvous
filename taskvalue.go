@@ -33,3 +33,19 @@ func TaskValueCtx[T any](fetchT func(context.Context) (T, error)) (<-chan T, Tas
 		return err
 	}
 }
+
+// TaskValue wraps a function that returns a value and an error to make it a [Task]
+// for [WaitAll]. The value is returned via a channel, so the values of successful
+// tasks can be retrieved even if one task fails by checking for each task's channel if it
+// has a value.
+func TaskValue[T any](makeT func() (T, error)) (<-chan T, Task) {
+	ch := make(chan T, 1)
+	return ch, func() error {
+		defer close(ch)
+		v, err := makeT()
+		if err == nil {
+			ch <- v
+		}
+		return err
+	}
+}
