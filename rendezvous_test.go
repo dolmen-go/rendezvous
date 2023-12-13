@@ -66,17 +66,14 @@ func withError() error {
 
 func withPanic() error {
 	panic(myErr)
-	return nil
 }
 
 func withNilPanic() error {
 	panic(nil)
-	return nil
 }
 
 func withStringPanic() error {
 	panic("OK")
-	return nil
 }
 
 func withDelay(d time.Duration, f func() error) func() error {
