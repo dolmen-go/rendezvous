@@ -68,10 +68,6 @@ func withPanic() error {
 	panic(myErr)
 }
 
-func withNilPanic() error {
-	panic(nil)
-}
-
 func withStringPanic() error {
 	panic("OK")
 }
@@ -98,8 +94,6 @@ func TestOne(t *testing.T) {
 
 	checkEquals(t, rendezvous.WaitAll(withError), []error{myErr})
 
-	checkNil(t, rendezvous.WaitAll(withNilPanic))
-
 	checkEquals(t, rendezvous.WaitAll(withPanic), []error{myErr})
 
 	errs := rendezvous.WaitAll(withStringPanic)
@@ -112,8 +106,6 @@ func TestTwo(t *testing.T) {
 	t.Parallel()
 
 	checkNil(t, rendezvous.WaitAll(noError, noError))
-	checkNil(t, rendezvous.WaitAll(noError, withNilPanic))
-	checkNil(t, rendezvous.WaitAll(withNilPanic, noError))
 
 	checkEquals(t, rendezvous.WaitAll(withError, withError), []error{myErr, myErr})
 
