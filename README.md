@@ -1,12 +1,13 @@
 # rendezvous - Synchronization utilities for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/dolmen-go/rendezvous.svg)](https://pkg.go.dev/github.com/dolmen-go/rendezvous)
+[![Code coverage](https://codecov.io/gh/dolmen-go/rendezvous/graph/badge.svg?token=WYSBIVG5FB)](https://codecov.io/gh/dolmen-go/rendezvous)
 [![CI](https://github.com/dolmen-go/rendezvous/actions/workflows/go.yml/badge.svg)](https://github.com/dolmen-go/rendezvous/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dolmen-go/rendezvous)](https://goreportcard.com/report/github.com/dolmen-go/rendezvous)
 
 ## Status
 
-Production ready. 100% code coverage.
+Production ready.
 
 ## Features
 
