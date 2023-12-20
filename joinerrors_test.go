@@ -14,6 +14,8 @@ func (myError) Error() string {
 }
 
 func TestJoinErrors(t *testing.T) {
+	t.Parallel()
+
 	if !errors.Is(joinErrors(context.Canceled), context.Canceled) {
 		t.Error("errors.Is failure")
 	}
