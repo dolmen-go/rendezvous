@@ -17,8 +17,14 @@ func TestJoinErrors(t *testing.T) {
 	if !errors.Is(joinErrors(context.Canceled), context.Canceled) {
 		t.Error("errors.Is failure")
 	}
+	if errors.Is(joinErrors(context.Canceled), myError{}) {
+		t.Error("errors.Is failure")
+	}
 	var me myError
 	if !errors.As(joinErrors(context.Canceled, myError{}), &me) {
+		t.Error("errors.As failure")
+	}
+	if errors.As(joinErrors(context.Canceled), &me) {
 		t.Error("errors.As failure")
 	}
 
