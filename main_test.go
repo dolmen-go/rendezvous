@@ -16,7 +16,8 @@ func TestMain(m *testing.M) {
 	descs := metrics.All()
 	var godebugMetrics []metrics.Sample
 	for i := range descs {
-		if strings.HasPrefix(descs[i].Name, "/godebug/") && strings.HasSuffix(descs[i].Name, ":events") {
+		// skip metrics.KindBad
+		if descs[i].Kind == metrics.KindUint64 && strings.HasPrefix(descs[i].Name, "/godebug/") && strings.HasSuffix(descs[i].Name, ":events") {
 			godebugMetrics = append(godebugMetrics, metrics.Sample{Name: descs[i].Name})
 		}
 	}
