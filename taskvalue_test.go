@@ -62,6 +62,8 @@ func ExampleTaskValue() {
 }
 
 func TestTaskValueCtxFailure(t *testing.T) {
+	t.Parallel()
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	waitStart := make(chan struct{})

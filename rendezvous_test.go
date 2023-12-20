@@ -142,6 +142,8 @@ func TestManyRandom(t *testing.T) {
 }
 
 func TestContextNone(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 
 	if rendezvous.WaitFirstError(ctx) != nil {
